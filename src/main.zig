@@ -9,17 +9,35 @@ pub fn main(init: std.process.Init) !void {
     const ed = b64.Base64.init();
     const ar = init.arena.allocator();
     const args = try init.minimal.args.toSlice(ar);
-    for (0.., args) |n, arg| {
-        std.debug.print("{d} : {s}\n", .{ n, arg });
-    }
+
     std.debug.print("\n", .{});
     const cmd = args[1];
-    const text = args[2];
-    if (std.ascii.eqlIgnoreCase(cmd, "encode")) {
+    var text: []const u8 = undefined;
+    if (!std.ascii.eqlIgnoreCase(cmd, "help") or
+        !std.ascii.eqlIgnoreCase(cmd, "-h") or
+        !std.ascii.eqlIgnoreCase(cmd, "version") or
+        !std.ascii.eqlIgnoreCase(cmd, "-v"))
+    {
+        text = args[2];
+    }
+    if (std.ascii.eqlIgnoreCase(cmd, "encode") or std.ascii.eqlIgnoreCase(cmd, "-e")) {
         const out = try ed.encode(alloc, text);
         std.debug.print("{s} = {s}", .{ text, out });
-    } else if (std.ascii.eqlIgnoreCase(cmd, "decode")) {
+    } else if (std.ascii.eqlIgnoreCase(cmd, "decode") or std.ascii.eqlIgnoreCase(cmd, "-d")) {
         const out = try ed.decode(alloc, "text");
         std.debug.print("{s} = {s}", .{ text, out });
+    } else if (std.ascii.eqlIgnoreCase(cmd, "help") or std.ascii.eqlIgnoreCase(cmd, "-h")) {
+        std.debug.print(
+            \\ b64ed - a cli b64 converter
+            \\ usage:
+            \\  b64ed [option] [text]
+            \\ options:
+            \\  -e , encode     encodes text into b64 
+            \\  -d , decode     decodes b64ed-texted into normal text 
+            \\  -h , help       shows this dialog 
+            \\ example:
+            \\  b64ed -e "i love zig"
+            \\  b64ed -d "aSB3YW50IHRvIGNoYW5nZSB0aGUgd29ybGQgLSA5OTk="
+        , .{});
     }
 }
