@@ -13,9 +13,9 @@ pub fn main(init: std.process.Init) !void {
     std.debug.print("\n", .{});
     const cmd = args[1];
     var text: []const u8 = undefined;
-    if (!std.ascii.eqlIgnoreCase(cmd, "help") or
-        !std.ascii.eqlIgnoreCase(cmd, "-h") or
-        !std.ascii.eqlIgnoreCase(cmd, "version") or
+    if (!std.ascii.eqlIgnoreCase(cmd, "help") and
+        !std.ascii.eqlIgnoreCase(cmd, "-h") and
+        !std.ascii.eqlIgnoreCase(cmd, "version") and
         !std.ascii.eqlIgnoreCase(cmd, "-v"))
     {
         text = args[2];
@@ -24,7 +24,7 @@ pub fn main(init: std.process.Init) !void {
         const out = try ed.encode(alloc, text);
         std.debug.print("{s} = {s}", .{ text, out });
     } else if (std.ascii.eqlIgnoreCase(cmd, "decode") or std.ascii.eqlIgnoreCase(cmd, "-d")) {
-        const out = try ed.decode(alloc, "text");
+        const out = try ed.decode(alloc, text);
         std.debug.print("{s} = {s}", .{ text, out });
     } else if (std.ascii.eqlIgnoreCase(cmd, "help") or std.ascii.eqlIgnoreCase(cmd, "-h")) {
         std.debug.print(
